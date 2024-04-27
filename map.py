@@ -132,9 +132,6 @@ def RenderLayer(mapOX, mapOY, grid, mapW, mapH):
                 grid[x][y] != -1
             ):
                 screen.blit(tileList[grid[x][y]], (i,j))
-    #print((mapWpx,mapHpx))
-
-# map preview frunction
     
 def TestMap():
     centeringX = int((swidth-mapWpx)/2)
