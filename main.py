@@ -229,14 +229,14 @@ while True:
                 
         fpsfont = pygame.font.Font("freesansbold.ttf", 16)
         fps = fpsfont.render(
-            f"{round(clock.get_fps())}", 
-            True, (255,0,0), (0,0,0)
+            f"FPS: {round(clock.get_fps())}", 
+            True, (125,175,255), (0,0,0)
         )
         fpsRect = fps.get_rect()
         fpsRect.center = (912, 48)
         screen.blit(fps, fpsRect)
         
-    # cap FPS at 30
-    clock.tick(30)
+    # cap FPS at 60
+    clock.tick(60)
 
     pygame.display.update()
