@@ -1,6 +1,7 @@
-import pygame, sys, time, math
+import pygame, sys, time, math, random
 from map import *
 from assets import *
+from projectile import *
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -18,6 +19,9 @@ pygame.mouse.set_cursor(pygame.cursors.broken_x)
 
 key = pygame.key.get_pressed()
 
+mClick = pygame.mouse.get_pressed()
+(mouseX,mouseY) = pygame.mouse.get_pos()
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -31,6 +35,7 @@ while True:
     key = pygame.key.get_pressed()
     
     # mouse input control
+    prevMouse = mClick
     mClick = pygame.mouse.get_pressed()
     (mouseX,mouseY) = pygame.mouse.get_pos()
     
@@ -112,7 +117,74 @@ while True:
         if state == 3:
             RenderLayer(mapOffsetX, mapOffsetY, mainMap2, mapWpx, mapHpx)
             RenderLayer(mapOffsetX, mapOffsetY, overlay2, mapWpx, mapHpx)
-        
+            
+            for i in range(len(enemyList)):
+                pygame.draw.circle(
+                    screen,
+                    (255,255,255),
+                    (
+                        enemyList[i].x + mapOffsetX,
+                        enemyList[i].y + mapOffsetY
+                    ),
+                    12
+                )
+                enemyList[i].x += -enemyList[i].spd*dt
+
+            dirLenX, dirLenY = mouseX-ppx-48, mouseY-ppy
+            angle = math.atan2(dirLenY, dirLenX)
+            if mClick[0] and not prevMouse[0]:
+                projectileList.append(
+                    Projectile(
+                        ppx+48, ppy, 
+                        dirLenX, 
+                        dirLenY,
+                        500,
+                        angle
+                    )
+                )
+            
+            for i in range(len(projectileList)):
+                pygame.draw.circle(
+                    screen,
+                    (255,0,0),
+                    (
+                        projectileList[i].x,
+                        projectileList[i].y
+                    ),
+                    3
+                )
+                projectileList[i].x += projectileList[i].velocity[0]*dt
+                projectileList[i].y += projectileList[i].velocity[1]*dt
+                
+            projectileDel = []
+            enemyDel = []
+            for i in range(len(projectileList)):
+                if (
+                    projectileList[i].x < 0 or 
+                    projectileList[i].x > swidth or 
+                    projectileList[i].y < 0 or 
+                    projectileList[i].y > sheight
+                ):
+                    projectileDel.append(i)
+                else:
+                    for j in range(len(enemyList)):
+                        if (
+                            dist(
+                                projectileList[i].x,
+                                projectileList[i].y,
+                                enemyList[j].x,
+                                enemyList[j].y
+                            ) <= 12
+                        ):
+                            projectileDel.append(i)
+                            enemyDel.append(j)
+                            break
+            for index in sorted(projectileDel, reverse=True):
+                del projectileList[index]
+            for index in sorted(enemyDel, reverse=True):
+                del enemyList[index]
+                
+
         # check walking for animation cycling
         if not walking:
             walkingFrame = 2
@@ -208,7 +280,7 @@ while True:
         mapMove = False
         mapEdge = False
         
-        if ppx > 864 and ppy > 480:
+        if state == 2 and ppx > 864 and ppy > 480:
             state+=1
             ppx = 96
             ppy = 96
@@ -223,7 +295,17 @@ while True:
 
             mapWpx = len(mainMap2)*tileDim*tileScale
             mapHpx = len(mainMap2[0])*tileDim*tileScale
+            
+            if state == 3:
+                for i in range(35):
+                    tempEnemy = Enemy(
+                        random.randint(swidth,swidth*3), 
+                        random.randint(0,sheight),
+                        random.randint(50,100)
+                    )
+                    enemyList.append(tempEnemy)
                 
+
         fpsfont = pygame.font.Font("freesansbold.ttf", 16)
         fps = fpsfont.render(
             f"FPS: {round(clock.get_fps())}", 
