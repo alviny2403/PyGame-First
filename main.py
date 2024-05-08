@@ -138,7 +138,7 @@ while True:
                         ppx+48, ppy, 
                         dirLenX, 
                         dirLenY,
-                        500,
+                        750,
                         angle
                     )
                 )
@@ -168,7 +168,10 @@ while True:
                     projectileDel.append(i)
                 else:
                     for j in range(len(enemyList)):
-                        if (
+                        if enemyList[j].x < 0:
+                            state = 5
+                            break
+                        elif (
                             dist(
                                 projectileList[i].x,
                                 projectileList[i].y,
@@ -183,8 +186,10 @@ while True:
                 del projectileList[index]
             for index in sorted(enemyDel, reverse=True):
                 del enemyList[index]
+            
+            if len(enemyList) == 0:
+                state = 4
                 
-
         # check walking for animation cycling
         if not walking:
             walkingFrame = 2
@@ -305,11 +310,10 @@ while True:
                     )
                     enemyList.append(tempEnemy)
                 
-
         fpsfont = pygame.font.Font("freesansbold.ttf", 16)
         fps = fpsfont.render(
             f"FPS: {round(clock.get_fps())}", 
-            True, (125,175,255), (0,0,0)
+            True, (255,0,0), (0,0,0)
         )
         fpsRect = fps.get_rect()
         fpsRect.center = (912, 48)
@@ -317,6 +321,9 @@ while True:
         
     if state == 4:
         screen.blit(end, endRect)
+        
+    if state == 5:
+        screen.blit(fail, failRect)
         
     # cap FPS at 60
     clock.tick(60)

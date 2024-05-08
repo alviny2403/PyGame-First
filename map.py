@@ -3,9 +3,9 @@ from assets import *
 pygame.init()
 
 # start screen text
-titleFont = pygame.font.Font("freesansbold.ttf", 64)
+titleFont = pygame.font.Font("freesansbold.ttf", 48)
 title = titleFont.render(
-    "Dino Adventure", 
+    "Dino in the Sino-Japanese War", 
     True, (255,255,255), (0,0,0)
 )
 titleRect = title.get_rect()
@@ -30,11 +30,17 @@ tutorialRect.center = (swidth//2, sheight//2)
 # end screen text
 endFont = pygame.font.Font("freesansbold.ttf", 64)
 end = endFont.render(
-    f"GAME OVER --- YOU WON!", 
+    f"DEFENSE SUCCESSFUL", 
     True, (255,255,255), (0,0,0)
 )
 endRect = end.get_rect()
 endRect.center = (swidth//2,sheight//2)
+fail = endFont.render(
+    f"DEFENSE FAILED", 
+    True, (255,255,255), (0,0,0)
+)
+failRect = fail.get_rect()
+failRect.center = (swidth//2,sheight//2)
 
 # transpose map matrix for compatibility
 
